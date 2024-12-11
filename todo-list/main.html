@@ -23,65 +23,43 @@
             <div class="input-group mb-3" id="input-group">
                 <input type="text" class="form-control" id="input-area">
                 <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-area" onclick="addItem()">추가</button>
+                <button class="btn btn-outline-secondary" type="button" id="button-area" onclick="addtodo()">추가</button>
             </div>
         </div>
     </div>
 <script>
-    // 항목 추가 함수
-    function addItem() {
-        const input = document.getElementById('input-area');
-        const listGroup = document.getElementById('list-group');
+    
+    $(document).ready(function(){
+        console.log("시작")
+        
+        $.ajax({
+            url:"https://api.themoviedb.org/3/movie/popular?api_key=10923b261ba94d897ac6b81148314a3f$page=1",
+            data:{},
+            type:"GET",
+            success:function(json){
+                console.log(json)
+            },
+            error:function(err){
 
-        // 입력값이 비어 있지 않을 때만 추가
-        if (input.value.trim() !== "") {
-            const newItem = document.createElement('li');
-            newItem.className = "list-group-item d-flex justify-content-between align-items-center";
-            newItem.innerHTML = `
-                ${input.value}
-                <span class="badge text-bg-primary rounded-pill" onclick="deleteItem(this)">삭제</span>
-            `;
-            listGroup.appendChild(newItem);
-            input.value = ""; // 입력 필드 초기화
-        } else {
-            alert("할 일을 입력하세요!"); // 입력값이 없을 경우 경고
-        }
+            }
+        })
+    })
+    function addtodo(){
+        let todo = $("#input-area").val();
+        console.log(todo);
+        let id = Math.floor(Math.random()*1000)
+
+        let list_item = `<li class="list-group-item d-flex justify-content-between align-items-center list-${id}" id="list-group-item">
+                ${todo}
+                <span class="badge rounded-pill" id="delete-button" onclick="deleteItem(${id})">삭제</span>
+        </li>`
+        $("#list-group").append(list_item)
+        $("#input-area").val('')
     }
 
-    // 항목 삭제 함수
-    function deleteItem(element) {
-        element.parentElement.remove();
+    function deleteItem(id){
+        $(".list-"+id).remove()
     }
-
-    //IME(입력기) 상태 확인 변수
-    let isComposing = false;
-
-    // IME 조합 시작 이벤트
-    document.getElementById('input-area').addEventListener('compositionstart', function() {
-        isComposing = true; // 조합 중 상태 설정
-    });
-
-    // IME 조합 완료 이벤트
-    document.getElementById('input-area').addEventListener('compositionend', function() {
-        isComposing = false; // 조합 완료 상태 설정
-    });
-
-
-    // 엔터 키로 항목 추가하기
-    document.getElementById('input-area').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter' && !isComposing) { // 조합 중이 아닐 때만 동작
-            event.preventDefault(); // 기본 동작 방지
-            addItem();
-        }
-    });
-
-    // 엔터 키로 항목 추가하기
-    // document.getElementById('input-area').addEventListener('keydown', function(event) {
-    // if (event.key === 'Enter') { // Enter 키 확인
-    //     event.preventDefault();
-    //     addItem();
-    // }
-    // });
 </script>
 </body>
 </html>  
